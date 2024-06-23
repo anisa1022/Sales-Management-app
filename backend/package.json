@@ -16,5 +16,17 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "validator": "^13.12.0"
-  }
+  },
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon Backend/server.js"
+  },
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module"
 }
