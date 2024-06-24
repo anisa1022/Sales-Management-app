@@ -1,16 +1,25 @@
 import express from 'express'
 import connectDB from './config/db.js'
 import dotenv from 'dotenv';
+import productRoute from './routes/productRoute.js';
+import userRoute from './routes/userRouter.js';
+import CustomerRoute  from './routes/customerRoute.js';
 
-
-const app = express();
 dotenv.config();
+import cookieParser from 'cookie-parser';
+connectDB();
+const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-// app.use("/api/products",productRoute)
-// app.use("/api/users" , u)
+app.use(cookieParser());
 
-app.get('/',(req,res)=> res.send('server is ready'));
-connectDB();
-app.listen(process.env.PORT , ()=> console.log(`server started running on ${process.env.PORT}`));
+
+app.use('/api/products',productRoute);
+app.use('/api/users' ,userRoute);
+app.use('/api/customers', CustomerRoute);
+
+app.get('/',(req,res)=> res.send('server is ready lets goooo'));
+
+const PORT = process.env.PORT || 8000
+app.listen( PORT, ()=> console.log(`server started running on ${PORT}`));
