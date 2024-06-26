@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import productRoute from './routes/productRoute.js';
 import userRoute from './routes/userRouter.js';
 import CustomerRoute  from './routes/customerRoute.js';
-
+import SaleRoute from './routes/saleRoute.js'
 dotenv.config();
 import cookieParser from 'cookie-parser';
 connectDB();
@@ -18,8 +18,8 @@ app.use(cookieParser());
 app.use('/api/products',productRoute);
 app.use('/api/users' ,userRoute);
 app.use('/api/customers', CustomerRoute);
-
-app.get('/',(req,res)=> res.send('server is ready lets goooo'));
+app.use('/api/sales', SaleRoute);
+app.get('/',(req,res)=> res.send('server is ready '));
 
 const PORT = process.env.PORT || 8000
 app.listen( PORT, ()=> console.log(`server started running on ${PORT}`));
