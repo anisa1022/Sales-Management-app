@@ -1,56 +1,67 @@
 import asyncHandler from "express-async-handler";
 import generateToken from "../utils/generateToken.js";
-import User from '../models/userModel.js';
+import User, { validate } from '../models/userModel.js';
+import bcrypt from 'bcryptjs';
+import Joi from "joi";
 //@dec Auth user/set token
 //route POST /api/users/auth
 //@access Public
 
-const authUser = asyncHandler(async(req , res)=>{
-    const {email ,password} = req.body
-    const user = await User.findOne({email});
-    if(user && (await user.matchPassword(password))){
-        generateToken(res,user._id);
-        res.status(201).json({
-            _id : user._id,
-            name: user.name,
-            email: user.email
-        })
+const LogValidate = (data)=>{
+    const schema = Joi.object({
+        email:Joi.string().required().label("Email"),
+        password:Joi.string().required().label("Password")
+    })
+    return schema.validate(data);
+}
 
-     
+const authUser = asyncHandler(async(req , res)=>{
+    try {
+        const {error}= LogValidate(req.body);
+        if(error)
+            return res.status(400).send({message:error.details[0].message});
+        const user = await User.findOne({email:req.body.emal});
+        if(!user)
+            return res.status(401).send({message:"Invalid Email or Password"});
+        
+        const validPassword = await  bcrypt.compare(
+            req.body.password , user.password
+        );
+        if(!validPassword)
+            return res.status(401).send({message:"Invalid Email or Password"});
+
+        const token = user.generateAuthToken();
+        res.status(200).send({data:token ,message: "Logged in successfully"})
+
+    } catch (error) {
+        res.status(500).send({message:"internal Server Error"});
     }
-    else{
-        res.status(401);
-        throw new Error('invalid email or password');
-    } 
+    
+    
 });
 
 //@dec  Register a new  user
 //route POST /api/users
 //@access Public
 const registerUser = asyncHandler(async(req , res)=>{
-    const {name , email , password}= req.body;
-    const userExist = await User.findOne({email});
-    if(userExist){
-        res.status(400);
-        throw new Error('user already exists')
+    try {
+        const {error} =validate(req.body);
+        if(error)
+            return res.status(400).send({message:error.details[0].message});
+
+        const user = await User.findOne({email:req.body.email});
+        if(user)
+            return res.status(409).send({message:"User with givin email already exists"})
+
+        const salt = await bcrypt.genSalt(Number(process.env.SALT));
+        const hashPassword = await bcrypt.hash(req.body.password , salt);
+
+        await new User({...req.body, password:hashPassword}).save();
+        res.status(201).send({message:"User created successfully"})
+    } catch (error) {
+        res.status(500).send({message:"internal Server Error"});
     }
-    const user =  await User.create({
-        name ,
-        email,
-        password
-    });
-    if(user ){
-        generateToken(res,user._id);
-        res.status(201).json({
-            _id : user._id,
-            name: user.name,
-            email: user.email
-        })
-    }
-    else{
-        res.status(400 );
-        throw new Error('invalid user');
-    }
+    
        
 });
 

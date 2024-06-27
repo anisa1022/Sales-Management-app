@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import joi from 'joi';
+import passwordComplexity from 'joi-password-complexity'
+
 const userSchema = mongoose.Schema({
     name:{
         type: String,
@@ -17,18 +21,25 @@ const userSchema = mongoose.Schema({
     timestamps: true
 });
 
-// userSchema.pre('save', async function(next){
-//     if(!this.isModified('password')){
-//         next();
-//     }
-//     const salt = await hasBrowserCrypto.gensalt(10); //This generates a salt with a cost factor of 10. A salt is a random value added to the password before hashing to ensure that even identical passwords hash to different values.
-//     this.password=  await bcrypt.hash(this.password , salt)
-// });
 
-// // Matchpassword compares plain text password with hashed password
-// userSchema.methods.matchPassword= async function (enterPassword){
-//     return await bcrypt.compare(enterPassword , this.password);
-// }
+
+
+
+userSchema.methods.generateAuthToken =function(){
+    const token = jtw.sign({_id:this._id}, process.env.JWT_SECRET)
+}
 
 const User = mongoose.model('User' , userSchema);
-export default User;
+
+const validate = (data)=>{
+    const schema = joi.object({
+        name:joi.string().required().label("Name"),
+        email:joi.string().required().label("Email"),
+        password:passwordComplexity().required().label("Password")
+    })
+    return schema.validate(data)
+}
+
+
+
+export { User , validate} ;
