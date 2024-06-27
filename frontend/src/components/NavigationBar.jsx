@@ -26,12 +26,21 @@ const navLinks =[
     {
         name: "Sales",
         icon:FileLineChart
-    }
+    },
+    {
+        name: 'Logout',
+        icon: LogOut,
+    },
 ];
 
 const variants = {
     expanded :{width: "20%"},
-    nonExpanded: {width: "10%"}
+    nonExpanded: {width: "5%"}
+}
+
+const handleLogout=()=>{
+    localStorage.removeItem("token");
+    window.location.reload();
 }
 
 function NavigationBar() {
@@ -50,7 +59,7 @@ function NavigationBar() {
 
         <div 
             onClick={() => setIsExpanded(!isExpanded)} 
-            className="w-5 h-5 bg-[#404040] rounded-full absolute -right-[10.5px] top-14 flex item-center justify-center "
+            className="w-5 h-5 bg-[#404040] rounded-full absolute -right-[10.5px] top-15 flex item-center justify-center "
             >
             <img src={RightArrow}  className='w-[5px]'/>
         </div>
@@ -62,7 +71,10 @@ function NavigationBar() {
                     (activeIndex ===index 
                         ? ' bg-[#404040] text-white font-semibold'
                         :'')}
-                        onClick={()=> setActiveIndex(index)}
+                        onClick={()=> {
+                            setActiveIndex(index);
+                            if (item.name === 'Logout') handleLogout();
+                        }}
                         >
                         <item.icon/> 
                         <span className={isExpanded ? "block" : "hidden"}>{item?.name}</span>
