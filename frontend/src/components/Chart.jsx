@@ -11,6 +11,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 
+// Registering chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -21,46 +22,44 @@ ChartJS.register(
   Legend
 );
 
+// Chart configuration options
 export const options = {
-  responsive: true,
-  tension: 0.4,
+  responsive: true, // Makes the chart responsive
+  maintainAspectRatio: false, // Maintains aspect ratio
+  tension: 0.4, // Adds tension to line
   plugins: {
     legend: {
-      position: "top",
+      position: "top", // Positions the legend at the top
     },
   },
 };
 
+// Labels for the x-axis
 const labels = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sept",
-  "Oct",
-  "Nov",
-  "Dec",
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"
 ];
 
+// Data for the chart
 export const data = {
-  labels,
+  labels, // Assigning x-axis labels
   datasets: [
     {
-      label: "Sales",
+      label: "Sales", // Label for the dataset
       data: [
-        15000, 10000, 14000, 11000, 16000, 12000, 8000, 14000, 11000, 12000,
-        23000, 12000,
-      ], 
-      borderColor: "#404040",
-      backgroundColor: "gray",
+        15000, 10000, 14000, 11000, 16000, 12000,
+        8000, 14000, 11000, 12000, 23000, 12000
+      ], // Sales data
+      borderColor: "#404040", // Line color
+      backgroundColor: "gray", // Fill color
     },
   ],
 };
 
-export default function App() {
-  return <Line options={options} data={data} />;
+export default function Chart() {
+  return (
+    <div className="w-full h-96"> {/* Container for the chart */}
+      <Line options={options} data={data} /> {/* Rendering the Line chart */}
+    </div>
+  );
 }

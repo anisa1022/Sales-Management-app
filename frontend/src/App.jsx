@@ -1,20 +1,20 @@
-import Dashboard from './components/Dashboard.jsx';
-import NavigationBar from './components/NavigationBar.jsx'
-import {useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import './index.css';
 
-const App = () => {
+function App() {
   return (
-    <div className='w-full flex'> 
-      {/* Navigation bar */}
-      <NavigationBar/>
-      {/* main components */}
-      <main className='grow'> 
-        <Dashboard/>
-      </main>
-    </div>
-    
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        {/* Add other routes here */}
+      </Routes>
+    </Router>
+  );
 }
-  
 
 export default App;
