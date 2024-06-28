@@ -22,11 +22,8 @@ const userSchema = mongoose.Schema({
 });
 
 
-
-
-
 userSchema.methods.generateAuthToken =function(){
-    const token = jtw.sign({_id:this._id}, process.env.JWT_SECRET)
+    const token = jwt.sign({_id:this._id}, process.env.JWT_SECRET)
 }
 
 const User = mongoose.model('User' , userSchema);
@@ -42,4 +39,4 @@ const validate = (data)=>{
 
 
 
-export { User , validate} ;
+export  { User , validate } ;

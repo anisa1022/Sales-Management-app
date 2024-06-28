@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import generateToken from "../utils/generateToken.js";
-import User, { validate } from '../models/userModel.js';
+import  {User, validate } from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import Joi from "joi";
 //@dec Auth user/set token
@@ -15,30 +15,35 @@ const LogValidate = (data)=>{
     return schema.validate(data);
 }
 
-const authUser = asyncHandler(async(req , res)=>{
+const authUser = asyncHandler(async (req, res) => {
     try {
-        const {error}= LogValidate(req.body);
-        if(error)
-            return res.status(400).send({message:error.details[0].message});
-        const user = await User.findOne({email:req.body.emal});
-        if(!user)
-            return res.status(401).send({message:"Invalid Email or Password"});
+        console.log("Request body:", req.body); // Logging the request body
+
+        const { error } = LogValidate(req.body);
+        if (error) {
+            console.log("Validation error:", error.details[0].message); // Logging validation errors
+            return res.status(400).send({ message: error.details[0].message });
+        }
         
-        const validPassword = await  bcrypt.compare(
-            req.body.password , user.password
-        );
-        if(!validPassword)
-            return res.status(401).send({message:"Invalid Email or Password"});
-
+        const user = await User.findOne({ email: req.body.email });
+        console.log("User found:", user); // Logging the found user
+        if (!user) {
+            return res.status(401).send({ message: "Invalid Email or Password" });
+        }
+        
+        const validPassword = await bcrypt.compare(req.body.password, user.password);
+        if (!validPassword) {
+            return res.status(401).send({ message: "Invalid Email or Password" });
+        }
+        
         const token = user.generateAuthToken();
-        res.status(200).send({data:token ,message: "Logged in successfully"})
-
+        res.status(200).send({ data: token, message: "Logged in successfully" });
     } catch (error) {
-        res.status(500).send({message:"internal Server Error"});
+        console.error("Error during authentication:", error); // Logging any caught errors
+        res.status(500).send({ message: "Internal Server Error" });
     }
-    
-    
 });
+
 
 //@dec  Register a new  user
 //route POST /api/users

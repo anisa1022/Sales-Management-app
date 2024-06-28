@@ -5,10 +5,14 @@ import productRoute from './routes/productRoute.js';
 import userRoute from './routes/userRouter.js';
 import CustomerRoute  from './routes/customerRoute.js';
 import SaleRoute from './routes/saleRoute.js'
+import cors from 'cors'
 dotenv.config();
 import cookieParser from 'cookie-parser';
 connectDB();
 const app = express();
+
+// Use CORS middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
