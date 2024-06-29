@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -9,8 +9,8 @@ import {
     LogOut,
     UserCircle
 } from 'lucide-react';
-import logo from './../assests/angelist.png';
-import RightArrow from './../assests/icons/rightArrow.svg';
+import axios from 'axios';
+import RightArrow from '../assests/icons/rightArrow.svg';
 
 // Navigation links data
 const navLinks = [
@@ -31,6 +31,7 @@ const variants = {
 function NavigationBar() {
     const [activeIndex, setActiveIndex] = useState(0); // Active link index state
     const [isExpanded, setIsExpanded] = useState(true); // Sidebar expanded state
+    const [user, setUser] = useState(null); // User state
     const navigate = useNavigate(); // Navigation hook
 
     // Handle logout functionality
@@ -38,6 +39,24 @@ function NavigationBar() {
         localStorage.removeItem("token"); // Remove token from local storage
         navigate('/login'); // Navigate to login page
     };
+
+    // Fetch user profile
+    useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const { data } = await axios.get('/api/users/profile', {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming you store the token in localStorage
+                    }
+                });
+                setUser(data.user);
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+            }
+        };
+
+        fetchUserProfile();
+    }, []);
 
     return (
         <motion.div
@@ -48,13 +67,17 @@ function NavigationBar() {
                 (isExpanded ? "px-10" : "px-2")
             }
         >
-            {/* Logo and title */}
-            <div className='logo-div flex space-x-3 font-bold text-[#404040]'>
-                <img src={logo} className="w-10 h-10" alt="Logo" />
-                <span className={isExpanded ? "block" : "hidden"}>
-                    Sales Management
-                </span>
-            </div>
+            {/* User picture and name */}
+            {/* User icon and name */}
+            {user && (
+                <div className='user-info flex items-center space-x-3 mb-8'>
+                    <img src={UserIcon} alt="User" className="h-10 w-10 rounded-full" /> {/* Common user icon */}
+                    <span className={isExpanded ? "block text-[#404040] font-medium" : "hidden"}>
+                        {user.name}
+                    </span>
+                </div>
+            )}
+
 
             {/* Toggle button for expanding/collapsing sidebar */}
             <div

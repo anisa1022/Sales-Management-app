@@ -1,6 +1,6 @@
 import React from 'react';
-import NavigationBar from './NavigationBar';
-import Chart from './Chart';
+import NavigationBar from '../components/NavigationBar';
+import Chart from '../components/Chart';
 
 function Dashboard() {
   return (
