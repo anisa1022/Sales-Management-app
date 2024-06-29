@@ -1,5 +1,5 @@
 import asyncHandler from "express-async-handler";
-import generateToken from "../utils/generateToken.js";
+import generateToken from "../middleware/generateToken.js";
 import  {User, validate } from '../models/userModel.js';
 import bcrypt from 'bcryptjs';
 import Joi from "joi";
@@ -17,11 +17,8 @@ const LogValidate = (data)=>{
 
 const authUser = asyncHandler(async (req, res) => {
     try {
-        console.log("Request body:", req.body); // Logging the request body
-
         const { error } = LogValidate(req.body);
         if (error) {
-            console.log("Validation error:", error.details[0].message); // Logging validation errors
             return res.status(400).send({ message: error.details[0].message });
         }
         
@@ -54,8 +51,8 @@ const registerUser = asyncHandler(async(req , res)=>{
         if(error)
             return res.status(400).send({message:error.details[0].message});
 
-        const user = await User.findOne({email:req.body.email});
-        if(user)
+        const existingUser = await User.findOne({email:req.body.email});
+        if(existingUser)
             return res.status(409).send({message:"User with givin email already exists"})
 
         const salt = await bcrypt.genSalt(Number(process.env.SALT));
@@ -74,10 +71,7 @@ const registerUser = asyncHandler(async(req , res)=>{
 //route POST /api/users/logout
 //@access Public
 const logoutUser = asyncHandler(async(req , res)=>{
-    res.cookie('jwt', '', {
-        httpOnly : true ,
-        expires: new Date(0)
-    })
+    res.cookie('jwt', '', { httpOnly : true ,expires: new Date(0)})
     res.status(200).json({message: 'User logged out'});
 });
 
@@ -112,10 +106,44 @@ const updateUserProfile = asyncHandler(async(req , res)=>{
             email: updatedUser.email
         });
     }else{
-        res.status(404);
-        throw new Error('User not Found');
+        res.status(404).send({ message: 'User not Found' });
     }
 
+});
+
+// @desc Get all users
+// @route GET /api/users
+// @access Private
+const getAllUsers = asyncHandler(async (req, res) => {
+    const users = await User.find({});
+    res.status(200).json(users);
+});
+
+// @desc Get user by ID
+// @route GET /api/users/:id
+// @access Private
+const getUserById = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        res.status(200).json(user);
+    } else {
+        res.status(404).send({ message: "User not found" });
+    }
+});
+
+// @desc Delete user by ID
+// @route DELETE /api/users/:id
+// @access Private
+const deleteUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        await user.remove();
+        res.status(200).json({ message: "User removed" });
+    } else {
+        res.status(404).send({ message: "User not found" });
+    }
 });
 
 export { 
@@ -123,5 +151,8 @@ export {
     registerUser,
     logoutUser,
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    getAllUsers,
+    getUserById,
+    deleteUser
 };
