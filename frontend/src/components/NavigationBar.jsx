@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+// import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -7,56 +8,55 @@ import {
     Users,
     FileLineChart,
     LogOut,
-    UserCircle
+    UserCircle,
+    ShoppingCart,
+    Truck
 } from 'lucide-react';
-import axios from 'axios';
 import RightArrow from '../assests/icons/rightArrow.svg';
+import UserIcon from '../assests/icons/userIcon.png';
+// import { useGetUserProfileQuery } from '../slices/userApiSlice';
+// import { setCredentials, logout } from '../slices/authSlice';
 
-// Navigation links data
-const navLinks = [
-    { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-    { name: "Product", icon: Package, path: "/product" },
-    { name: "Customer", icon: Users, path: "/customer" },
-    { name: "Sales", icon: FileLineChart, path: "/sales" },
-    { name: "Users", icon: UserCircle, path: "/users" },
-    { name: 'Logout', icon: LogOut, path: "/login" }
-];
-
-// Animation variants for expanding and collapsing sidebar
 const variants = {
     expanded: { width: "20%" },
     nonExpanded: { width: "5%" }
 };
 
 function NavigationBar() {
-    const [activeIndex, setActiveIndex] = useState(0); // Active link index state
-    const [isExpanded, setIsExpanded] = useState(true); // Sidebar expanded state
-    const [user, setUser] = useState(null); // User state
-    const navigate = useNavigate(); // Navigation hook
+    const [activeIndex, setActiveIndex] = useState(0);
+    const [isExpanded, setIsExpanded] = useState(true);
+    const userInfo = useSelector((state) => state.auth.userInfo);
+    const token = useSelector((state) => state.auth.token);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    // Handle logout functionality
+    const { data: user, isSuccess } = useGetUserProfileQuery(undefined, {
+        skip: !token,
+    });
+
+    useEffect(() => {
+        if (isSuccess) {
+            dispatch(setCredentials(user));
+        }
+    }, [user, isSuccess, dispatch]);
+
     const handleLogout = () => {
-        localStorage.removeItem("token"); // Remove token from local storage
-        navigate('/login'); // Navigate to login page
+        dispatch(logout());
+        navigate('/login');
     };
 
-    // Fetch user profile
-    useEffect(() => {
-        const fetchUserProfile = async () => {
-            try {
-                const { data } = await axios.get('/api/users/profile', {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming you store the token in localStorage
-                    }
-                });
-                setUser(data.user);
-            } catch (error) {
-                console.error("Error fetching user profile:", error);
-            }
-        };
-
-        fetchUserProfile();
-    }, []);
+    const navLinks = userInfo?.name === 'admin' ? [
+        { name: "Product", icon: Package, path: "/product" },
+        { name: "Supplier", icon: Truck, path: "/supplier" },
+        { name: "Purchases", icon: ShoppingCart, path: "/purchases" },
+        { name: "Users", icon: UserCircle, path: "/users" },
+        { name: 'Logout', icon: LogOut, path: "/login" }
+    ] : [
+        { name: "Product", icon: Package, path: "/product" },
+        { name: "Customer", icon: Users, path: "/customer" },
+        { name: "Sales", icon: FileLineChart, path: "/sales" },
+        { name: 'Logout', icon: LogOut, path: "/login" }
+    ];
 
     return (
         <motion.div
@@ -67,19 +67,15 @@ function NavigationBar() {
                 (isExpanded ? "px-10" : "px-2")
             }
         >
-            {/* User picture and name */}
-            {/* User icon and name */}
-            {user && (
+            {userInfo && (
                 <div className='user-info flex items-center space-x-3 mb-8'>
-                    <img src={UserIcon} alt="User" className="h-10 w-10 rounded-full" /> {/* Common user icon */}
+                    <img src={UserIcon} alt="User" className="h-10 w-10 rounded-full" />
                     <span className={isExpanded ? "block text-[#404040] font-medium" : "hidden"}>
-                        {user.name}
+                        {userInfo.name}
                     </span>
                 </div>
             )}
 
-
-            {/* Toggle button for expanding/collapsing sidebar */}
             <div
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="w-5 h-5 bg-[#404040] rounded-full absolute -right-[10.5px] top-15 flex items-center justify-center cursor-pointer"
@@ -87,7 +83,6 @@ function NavigationBar() {
                 <img src={RightArrow} className='w-[5px]' alt="Toggle Sidebar" />
             </div>
 
-            {/* Navigation links */}
             <div className='mt-10 flex flex-col space-y-8'>
                 {navLinks.map((item, index) => (
                     <div

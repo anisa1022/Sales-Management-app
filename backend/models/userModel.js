@@ -1,42 +1,36 @@
-import mongoose from "mongoose";
-import jwt from 'jsonwebtoken';
+import mongoose, { Mongoose } from "mongoose";
 import bcrypt from 'bcryptjs';
-import joi from 'joi';
-import passwordComplexity from 'joi-password-complexity'
 
 const userSchema = mongoose.Schema({
     name:{
         type: String,
-        required: true
+        required :true
     },
     email:{
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     password:{
         type: String,
         required: true
     },
+    
 },{
     timestamps: true
 });
 
+userSchema.pre('save',async function(next){
+    if(!this.isModified('password')){
+        next();
+     }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+});
 
-userSchema.methods.generateAuthToken =function(){
-    const token = jwt.sign({_id:this._id}, process.env.JWT_SECRET)
+userSchema.methods.matchPassword = async function(enterPassword){
+    return await bcrypt.compare(enterPassword, this.password);
 }
 
-const User = mongoose.model('User' , userSchema);
-
-const validate = (data)=>{
-    const schema = joi.object({
-        name:joi.string().required().label("Name"),
-        email:joi.string().required().label("Email"),
-        password:passwordComplexity().required().label("Password")
-    })
-    return schema.validate(data)
-}
-
-
-
-export  { User , validate } ;
+const User = mongoose.model('User',userSchema);
+export  default User;

@@ -1,26 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import NavigationBar from '../components/NavigationBar'; 
+// import NavigationBar from '../NavigationBar'; 
 
 function RegisterUser() {
-  const [data, setData] = useState({
-    name: "",
-    email: "",
-    password: ""
-  });
+  const [name ,setName] = useState('');
+  const [email ,setEmail] = useState('');
+  const [password ,setPassword] = useState('');
+
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const navigate = useNavigate();
-
-  const handleChange = ({ currentTarget: input }) => {
-    setData({ ...data, [input.name]: input.value });
-    setError(""); // Reset the error state when the user starts typing
-    setSuccess(false); // Reset the success state
-  };
 
   const fetchUsers = async () => {
     try {
@@ -125,8 +118,8 @@ function RegisterUser() {
               type="text"
               placeholder="Name"
               name="name"
-              onChange={handleChange}
-              value={data.name}
+              onChange={(e)=> setName(e.target.value)}
+              value={name}
               required
               className="w-full p-2 border border-gray-300 rounded"
             />
@@ -134,8 +127,8 @@ function RegisterUser() {
               type="email"
               placeholder="Email"
               name="email"
-              onChange={handleChange}
-              value={data.email}
+              onChange={(e)=>setEmail(e.target.value)}
+              value={email}
               required
               className="w-full p-2 border border-gray-300 rounded"
             />
@@ -143,8 +136,8 @@ function RegisterUser() {
               type="password"
               placeholder="Password"
               name="password"
-              onChange={handleChange}
-              value={data.password}
+              onChange={(e)=>setPassword(e.target.value)}
+              value={password}
               required
               className="w-full p-2 border border-gray-300 rounded"
             />
@@ -155,6 +148,7 @@ function RegisterUser() {
             </button>
           </form>
         </div>
+
         <div className="max-w-lg mx-auto mt-8">
           <h2 className="text-xl font-bold mb-4">Users List</h2>
           <ul className="space-y-2">

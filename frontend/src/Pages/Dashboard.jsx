@@ -4,7 +4,7 @@ import Chart from '../components/Chart';
 
 function Dashboard() {
   return (
-    <div className='flex'>
+    <div className='flex'> 
       <NavigationBar />
       <div className='flex flex-col space-y-6 py-12 px-14 w-full'>
         <h2 className="text-2xl font-bold">Dashboard</h2>

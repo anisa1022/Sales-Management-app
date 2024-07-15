@@ -24,17 +24,19 @@ const TopNavBar = () => {
   return (
     <div className="flex justify-between items-center p-4 bg-gray-900 text-white shadow-md">
       <div className="flex items-center">
-        <img src={logo} alt="Logo" className="h-10 w-10 mr-3" /> {/* Update the src with your logo path */}
-        <span className="text-2xl font-bold">Sales Management </span> {/* Update "YourAppName" with your app's name */}
+        <img src={logo} alt="Logo" className="h-10 w-10 mr-3" /> 
+        <span className="text-2xl font-bold">Sales Management </span> 
       </div>
+      
       {user && (
         <div className="flex items-center">
           <img src={user.picture} alt="User" className="h-10 w-10 rounded-full mr-3" /> {/* Update user.picture based on your user object */}
           <span className="text-lg">{user.name}</span>
         </div>
-      )}
+      )} 
+
     </div>
   );
 };
-
+  
 export default TopNavBar;
