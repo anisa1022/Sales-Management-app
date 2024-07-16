@@ -8,16 +8,17 @@ function Login() {
     const [email ,setEmail] = useState('');
     const [password ,setPassword] = useState('');
 
-    const [error, setError] = useState("");
+    // const [error, setError] = useState("");
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const [login ,{isLoading}] = useLoginMutation();
+
     const {userInfo} = useSelector((state) =>state.auth);
 
     useEffect(()=>{
         if(userInfo){
-            navigate('/')
+            navigate('/');
         }
     },[navigate ,userInfo]);
 
@@ -58,8 +59,11 @@ function Login() {
                                 className='w-full p-2 border border-gray-300 rounded'
                             />
                         </div>
-                        {error && <div className="text-red-500 mb-4">{error}</div>}
-                        <button className='w-full bg-[#404040] text-white p-2 rounded hover:bg-gray-500 transition duration-200' type='submit' variant='primary' >
+                        {/* {error && <div className="text-red-500 mb-4">{error}</div>} */}
+                        <button 
+                            type='submit'
+                            variant='primary' 
+                            className='w-full bg-[#404040] text-white p-2 rounded hover:bg-gray-500 transition duration-200' >
                             login
                         </button>
                     </form>

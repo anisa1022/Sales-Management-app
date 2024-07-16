@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -25,27 +25,24 @@ const variants = {
 function NavigationBar() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isExpanded, setIsExpanded] = useState(true);
-    const userInfo = useSelector((state) => state.auth.userInfo);
-    const token = useSelector((state) => state.auth.token);
+    const { userInfo } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { data: user, isSuccess } = useGetUserProfileQuery(undefined, {
-        skip: !token,
-    });
+    
 
-    useEffect(() => {
-        if (isSuccess) {
-            dispatch(setCredentials(user));
-        }
-    }, [user, isSuccess, dispatch]);
+    // useEffect(() => {
+    //     if (isSuccess) {
+    //         dispatch(setCredentials(user));
+    //     }
+    // }, [user, isSuccess, dispatch]);
 
     const handleLogout = () => {
         dispatch(logout());
         navigate('/login');
     };
 
-    const navLinks = userInfo?.name === 'admin' ? [
+    const navLinks = userInfo.name === 'admin' ? [
         { name: "Product", icon: Package, path: "/product" },
         { name: "Supplier", icon: Truck, path: "/supplier" },
         { name: "Purchases", icon: ShoppingCart, path: "/purchases" },

@@ -26,14 +26,16 @@ app.use(cookieParser());
 
 
 app.get('/',(req,res)=> res.send('server is ready '));
-app.use(errorHandler);
-app.use(notFound);
+
 
 app.use('/api/products',productRoute);
-app.use('/api/users' ,userRoute);
+app.use('/api/users' , userRoute);
 app.use('/api/customers', CustomerRoute);
 app.use('/api/sales', SaleRoute);
 
 
 const PORT = process.env.PORT || 8000
+
+app.use(errorHandler);
+app.use(notFound);
 app.listen( PORT, ()=> console.log(`server started running on ${PORT}`));

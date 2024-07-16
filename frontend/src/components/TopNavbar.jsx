@@ -4,22 +4,22 @@ import logo from './../assests/angelist.png';
 const TopNavBar = () => {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const { data } = await axios.get('/api/users/profile', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming you store the token in localStorage
-          }
-        });
-        setUser(data.user);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUserProfile = async () => {
+  //     try {
+  //       const { data } = await axios.get('/api/users/profile', {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming you store the token in localStorage
+  //         }
+  //       });
+  //       setUser(data.user);
+  //     } catch (error) {
+  //       console.error("Error fetching user profile:", error);
+  //     }
+  //   };
 
-    fetchUserProfile();
-  }, []);
+  //   fetchUserProfile();
+  // }, []);
 
   return (
     <div className="flex justify-between items-center p-4 bg-gray-900 text-white shadow-md">
