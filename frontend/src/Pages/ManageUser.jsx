@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-// import NavigationBar from '../NavigationBar'; 
+ 
 
-function RegisterUser() {
+function ManageUser() {
   const [name ,setName] = useState('');
   const [email ,setEmail] = useState('');
   const [password ,setPassword] = useState('');
@@ -109,7 +109,7 @@ function RegisterUser() {
 
   return (
     <div className="flex">
-      <NavigationBar />
+      
       <div className="flex-1 p-4">
         <div className="max-w-lg mx-auto">
           <h1 className="text-2xl font-bold mb-4">Manage Users</h1>
@@ -176,4 +176,4 @@ function RegisterUser() {
   );
 }
 
-export default RegisterUser;
+export default ManageUser;

@@ -9,16 +9,16 @@ const getProduct = async(req, res)=>{
     }
 }
 
-/// get single product 
-const getSingleProduct = async(req, res)=>{
-    try {
-        const { id } = req.params
-        const product = await Product.findById(id)
-        res.status(200).json(product)
-    } catch (error) {
-        res.status(500).json({message: error.message})
-    }
-}
+// /// get single product 
+// const getSingleProduct = async(req, res)=>{
+//     try {
+//         const { id } = req.params
+//         const product = await Product.findById(id)
+//         res.status(200).json(product)
+//     } catch (error) {
+//         res.status(500).json({message: error.message})
+//     }
+// }
 
 
 /// post product
@@ -32,17 +32,27 @@ const postProduct =async(req,res)=>{
 }
 /// update product
 const updateProduct =async(req,res)=>{
-    try {
-        const { id } = req.params;
-        const product = await Product.findByIdAndUpdate(id, req.body);
-        if(!product){
-            return res.status(404).json({message: "Product not found"});
-        }
-        const UpdateProduct = await Product.findById(IDBTransaction);
-        res.status(200).json(UpdateProduct);
-    } catch (error) {
-        res.status(500).json({message: error.message});
+    const { id } = req.params;
+  const { name, description, price, category, stock } = req.body;
+
+  try {
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
     }
+
+    product.name = name;
+    product.description = description;
+    product.price = price;
+    product.category = category;
+    product.stock = stock;
+
+    const updatedProduct = await product.save();
+    res.json(updatedProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
 }
 
 // delete product
@@ -62,7 +72,7 @@ const DeleteProduct =async(req,res)=>{
 
 export {
     getProduct ,
-    getSingleProduct ,
+    // getSingleProduct ,
     postProduct ,
     updateProduct,
     DeleteProduct

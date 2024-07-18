@@ -6,6 +6,6 @@ const baseQuery = fetchBaseQuery({ baseUrl: '' });
 // Create an API slice with the base query and tag types for caching
 export const apiSlice = createApi({
     baseQuery,
-    tagTypes: ['User'],
+    tagTypes: ['User','Product'],
     endpoints: (builder) => ({}),
 });

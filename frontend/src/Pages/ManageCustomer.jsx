@@ -1,9 +1,9 @@
 import React from 'react'
 
-function Customers() {
+function ManageCustomer() {
   return (
     <div>Customers</div>
   )
 }
 
-export default Customers
+export default ManageCustomer

@@ -4,8 +4,7 @@ import { BrowserRouter as Router ,createBrowserRouter,createRoutesFromElements, 
 import App from './App.jsx'
 import './index.css'
 import Login from './Pages/Login';
-import Dashboard from './Pages/Dashboard';
-import RegisterUser from './Pages/admin/RegisterUser';
+
 import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute component
 import { Provider } from 'react-redux';
 import store from './store';

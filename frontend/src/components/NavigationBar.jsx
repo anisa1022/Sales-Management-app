@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// src/components/NavigationBar.js
+import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -14,11 +15,11 @@ import {
 } from 'lucide-react';
 import RightArrow from '../assests/icons/rightArrow.svg';
 import UserIcon from '../assests/icons/userIcon.png';
-// import { useGetUserProfileQuery } from '../slices/userApiSlice';
-// import { setCredentials, logout } from '../slices/authSlice';
+import { useLogoutMutation } from '../services/userSlice';
+import { logout } from '../services/authSlice';
 
 const variants = {
-    expanded: { width: "20%" },
+    expanded: { width: "15%" },
     nonExpanded: { width: "5%" }
 };
 
@@ -29,17 +30,16 @@ function NavigationBar() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    
+    const [logoutApiCall] = useLogoutMutation();
 
-    // useEffect(() => {
-    //     if (isSuccess) {
-    //         dispatch(setCredentials(user));
-    //     }
-    // }, [user, isSuccess, dispatch]);
-
-    const handleLogout = () => {
-        dispatch(logout());
-        navigate('/login');
+    const handleLogout = async () => {
+        try {
+            await logoutApiCall().unwrap();
+            dispatch(logout());
+            navigate('/');
+        } catch (error) {
+            console.error('Failed to logout:', error);
+        }
     };
 
     const navLinks = userInfo.name === 'admin' ? [
@@ -52,7 +52,7 @@ function NavigationBar() {
         { name: "Product", icon: Package, path: "/product" },
         { name: "Customer", icon: Users, path: "/customer" },
         { name: "Sales", icon: FileLineChart, path: "/sales" },
-        { name: 'Logout', icon: LogOut, path: "/login" }
+        { name: 'Logout', icon: LogOut, path: "/ " }
     ];
 
     return (
@@ -60,9 +60,10 @@ function NavigationBar() {
             animate={isExpanded ? "expanded" : "nonExpanded"}
             variants={variants}
             className={
-                'py-12 flex flex-col border border-r-1 h-screen relative ' +
-                (isExpanded ? "px-10" : "px-2")
+                'py-12 flex flex-col fixed top-16 left-0 h-[calc(100%-4rem)] bg-white shadow-md mt-2 ' +
+                (isExpanded ? "w-64" : "w-20")
             }
+            style={{ zIndex: 1000 }}
         >
             {userInfo && (
                 <div className='user-info flex items-center space-x-3 mb-8'>
@@ -75,7 +76,7 @@ function NavigationBar() {
 
             <div
                 onClick={() => setIsExpanded(!isExpanded)}
-                className="w-5 h-5 bg-[#404040] rounded-full absolute -right-[10.5px] top-15 flex items-center justify-center cursor-pointer"
+                className="w-5 h-5 bg-gray-900 rounded-full absolute -right-[10.5px] top-15 flex items-center justify-center cursor-pointer"
             >
                 <img src={RightArrow} className='w-[5px]' alt="Toggle Sidebar" />
             </div>
@@ -87,7 +88,7 @@ function NavigationBar() {
                         className={
                             'flex space-x-3 p-2 rounded cursor-pointer' +
                             (activeIndex === index
-                                ? ' bg-[#404040] text-white font-semibold'
+                                ? ' bg-gray-900 text-white font-semibold'
                                 : '')
                         }
                         onClick={() => {
