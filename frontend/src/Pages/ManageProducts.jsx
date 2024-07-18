@@ -1,21 +1,16 @@
 // src/pages/ManageProducts.js
 import React, { useState } from 'react';
-import {
-  useFetchProductsQuery,
-  useAddProductMutation,
-  useUpdateProductMutation,
-  useDeleteProductMutation
-} from '../services/productSlice';
+import { useFetchProductsQuery, useAddProductMutation, useUpdateProductMutation, useDeleteProductMutation } from '../services/productSlice';
+import ProductForm from '../components/ProductForm';
+import ProductTable from '../components/ProductTable';
 import NavigationBar from '../components/NavigationBar';
 import Header from '../components/Header';
-import ProductTable from '../components/ProductTable';
-import ProductForm from '../components/ProductForm';
 
-function ManageProducts() {
-  const { data: products = [], refetch } = useFetchProductsQuery(); // Fetch products from the backend
-  const [addProduct] = useAddProductMutation(); // Mutation to add a product
-  const [updateProduct] = useUpdateProductMutation(); // Mutation to update a product
-  const [deleteProduct] = useDeleteProductMutation(); // Mutation to delete a product
+const ManageProducts = () => {
+  const { data: products = [], refetch } = useFetchProductsQuery();
+  const [addProduct] = useAddProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -23,11 +18,17 @@ function ManageProducts() {
   const [category, setCategory] = useState('');
   const [stock, setStock] = useState('');
   const [editProductId, setEditProductId] = useState(null);
-  const [showForm, setShowForm] = useState(false); // State to control the visibility of the form
+  const [showForm, setShowForm] = useState(false);
 
-  // Handle adding or updating a product
   const handleAddProduct = async () => {
-    const productData = { name, description, price, category, stock };
+    const productData = {
+      name,
+      description,
+      price: Number(price), // Ensure price is a number
+      category,
+      stock: Number(stock) // Ensure stock is a number
+    };
+
     try {
       if (editProductId) {
         await updateProduct({ id: editProductId, data: productData });
@@ -40,14 +41,13 @@ function ManageProducts() {
       setPrice('');
       setCategory('');
       setStock('');
-      setShowForm(false); // Hide the form after submission
+      setShowForm(false);
       refetch();
     } catch (error) {
       console.error('Failed to save product:', error);
     }
   };
 
-  // Handle editing a product
   const handleEditProduct = (product) => {
     setName(product.name);
     setDescription(product.description);
@@ -55,10 +55,9 @@ function ManageProducts() {
     setCategory(product.category);
     setStock(product.stock);
     setEditProductId(product._id);
-    setShowForm(true); // Show the form when editing
+    setShowForm(true);
   };
 
-  // Handle deleting a product
   const handleDeleteProduct = async (id) => {
     try {
       await deleteProduct(id);
@@ -69,13 +68,11 @@ function ManageProducts() {
   };
 
   return (
-    <div className='flex'>
+    <div className="flex">
       <Header />
       <NavigationBar />
-      <div className="flex-grow ml-64 mt-20 p-6"> {/* Adjust margin to account for fixed navigation bars */}
+      <div className="flex-grow ml-64 mt-20 p-6">
         <h2 className="text-2xl font-bold mb-4">Products</h2>
-
-        {/* Product Form */}
         <ProductForm
           name={name}
           description={description}
@@ -92,8 +89,6 @@ function ManageProducts() {
           setShowForm={setShowForm}
           editProductId={editProductId}
         />
-
-        {/* Product Table */}
         <ProductTable
           products={products}
           handleEditProduct={handleEditProduct}
@@ -102,6 +97,6 @@ function ManageProducts() {
       </div>
     </div>
   );
-}
+};
 
 export default ManageProducts;

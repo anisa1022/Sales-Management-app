@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 import {createCustomer,
-    getCustomer,
+    getCustomers,
     getCustomerById,
     updateCustomer,
     deleteCustomer } from '../controller/customerController.js';
@@ -10,7 +10,7 @@ import {createCustomer,
 
 
 router.post('/',createCustomer)
-router.get('/',getCustomer);
+router.get('/',getCustomers);
 
 
 router.get('/:id',getCustomerById)

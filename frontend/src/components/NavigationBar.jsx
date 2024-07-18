@@ -1,7 +1,7 @@
 // src/components/NavigationBar.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     LayoutDashboard,
@@ -29,8 +29,15 @@ function NavigationBar() {
     const { userInfo } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [logoutApiCall] = useLogoutMutation();
+
+    useEffect(() => {
+        const currentPath = location.pathname.split("/")[1];
+        const index = navLinks.findIndex(link => link.path.includes(currentPath));
+        setActiveIndex(index);
+    }, [location.pathname]);
 
     const handleLogout = async () => {
         try {
@@ -45,7 +52,7 @@ function NavigationBar() {
     const navLinks = userInfo.name === 'admin' ? [
         { name: "Product", icon: Package, path: "/product" },
         { name: "Supplier", icon: Truck, path: "/supplier" },
-        { name: "Purchases", icon: ShoppingCart, path: "/purchases" },
+        { name: "Purchases", icon: ShoppingCart, path: "/purchase" },
         { name: "Users", icon: UserCircle, path: "/users" },
         { name: 'Logout', icon: LogOut, path: "/login" }
     ] : [
@@ -86,10 +93,8 @@ function NavigationBar() {
                     <div
                         key={index}
                         className={
-                            'flex space-x-3 p-2 rounded cursor-pointer' +
-                            (activeIndex === index
-                                ? ' bg-gray-900 text-white font-semibold'
-                                : '')
+                            'flex space-x-3 p-2 rounded cursor-pointer transition duration-300 ' +
+                            (activeIndex === index ? 'bg-gray-900 text-white font-semibold' : 'hover:bg-gray-700 hover:text-white')
                         }
                         onClick={() => {
                             setActiveIndex(index);

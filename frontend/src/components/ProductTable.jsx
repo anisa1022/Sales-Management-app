@@ -1,4 +1,3 @@
-// src/components/ProductTable.js
 import React from 'react';
 
 const ProductTable = ({ products, handleEditProduct, handleDeleteProduct }) => (
@@ -25,7 +24,7 @@ const ProductTable = ({ products, handleEditProduct, handleDeleteProduct }) => (
             <td className="px-4 py-2 border">{product.stock}</td>
             <td className="px-4 py-2 border">
               <button
-                className="bg-[#4A6FA5] text-white p-2 rounded"
+                className="bg-blue-500 text-white p-2 rounded"
                 onClick={() => handleEditProduct(product)}
               >
                 EDIT
@@ -33,7 +32,7 @@ const ProductTable = ({ products, handleEditProduct, handleDeleteProduct }) => (
             </td>
             <td className="px-4 py-2 border">
               <button
-                className="bg-[#A54A4A] text-white p-2 rounded"
+                className="bg-red-500 text-white p-2 rounded"
                 onClick={() => handleDeleteProduct(product._id)}
               >
                 DELETE

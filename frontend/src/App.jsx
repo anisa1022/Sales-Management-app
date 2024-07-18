@@ -68,7 +68,7 @@ function App() {
               } 
             />
              <Route 
-              path="/sale" 
+              path="/sales" 
               element={
                 <PrivateRoute>
                   <ManageSales />

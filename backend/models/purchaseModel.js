@@ -17,6 +17,10 @@ const purchaseSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    price: {
+      type: Number,
+      required: true,
+    },
     totalPrice: {
       type: Number,
       required: true,

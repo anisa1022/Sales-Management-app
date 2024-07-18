@@ -1,20 +1,17 @@
-
 import React from 'react';
-const ProductForm = ({
+const CustomerForm = ({
   name,
-  description,
-  price,
-  category,
-  stock,
+  email,
+  phone,
+  address,
   setName,
-  setDescription,
-  setPrice,
-  setCategory,
-  setStock,
-  handleAddProduct,
+  setEmail,
+  setPhone,
+  setAddress,
+  handleAddCustomer,
   showForm,
   setShowForm,
-  editProductId
+  editCustomerId
 }) => (
   <>
     {!showForm && (
@@ -22,7 +19,7 @@ const ProductForm = ({
         className="bg-gray-900 text-white font-semibold p-2 rounded mb-4"
         onClick={() => setShowForm(true)}
       >
-        ADD PRODUCT
+        ADD CUSTOMER
       </button>
     )}
     {showForm && (
@@ -35,45 +32,52 @@ const ProductForm = ({
           onChange={(e) => setName(e.target.value)}
         />
         <input
-          type="text"
+          type="email"
           className="border p-2 w-full"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
-          type="number"
-          className="border p-2 w-full"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(Number(e.target.value))}
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="text"
           className="border p-2 w-full"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          placeholder="Phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
         />
         <input
-          type="number"
+          type="text"
           className="border p-2 w-full"
-          placeholder="Stock"
-          value={stock}
-          onChange={(e) => setStock(Number(e.target.value))}
+          placeholder="State"
+          value={address.state}
+          onChange={(e) => setAddress({ ...address, state: e.target.value })}
+        />
+        <input
+          type="text"
+          className="border p-2 w-full"
+          placeholder="City"
+          value={address.city}
+          onChange={(e) => setAddress({ ...address, city: e.target.value })}
+        />
+        <input
+          type="text"
+          className="border p-2 w-full"
+          placeholder="District"
+          value={address.district}
+          onChange={(e) => setAddress({ ...address, district: e.target.value })}
         />
         <div className="col-span-1 md:col-span-2 flex justify-end space-x-4">
           <button
             className="bg-gray-900 text-white font-semibold p-2 rounded w-full md:w-auto"
-            onClick={handleAddProduct}
+            onClick={handleAddCustomer}
           >
-            {editProductId ? 'UPDATE PRODUCT' : 'ADD PRODUCT'}
+            {editCustomerId ? 'UPDATE CUSTOMER' : 'ADD CUSTOMER'}
           </button>
           <button
             className="bg-gray-500 text-white p-2 rounded w-full md:w-auto"
             onClick={() => {
               setShowForm(false);
-              setEditProductId(null);
+              setEditCustomerId(null);
             }}
           >
             CANCEL
@@ -84,4 +88,4 @@ const ProductForm = ({
   </>
 );
 
-export default ProductForm;
+export default CustomerForm;

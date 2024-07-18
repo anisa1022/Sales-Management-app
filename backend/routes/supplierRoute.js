@@ -4,17 +4,17 @@ import {
   getSuppliers,
   getSupplierById,
   deleteSupplier,
-} from '../controllers/supplierController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+} from '../controller/supplierController.js';
+import { protect} from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.route('/')
-  .post(protect, admin, createSupplier)
-  .get(protect, admin, getSuppliers);
+  .post(protect,  createSupplier)
+  .get(protect,  getSuppliers);
 
 router.route('/:id')
-  .get(protect, admin, getSupplierById)
-  .delete(protect, admin, deleteSupplier);
+  .get(protect, getSupplierById)
+  .delete(protect, deleteSupplier);
 
 export default router;

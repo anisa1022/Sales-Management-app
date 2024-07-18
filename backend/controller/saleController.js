@@ -1,125 +1,128 @@
+import asyncHandler from 'express-async-handler';
 import Sale from '../models/saleModel.js';
 import Product from '../models/productModel.js';
 import Customer from '../models/customerModel.js';
 
-// @desc    Create a new sale
-// @route   POST /api/sales
-// @access  Public
-export const createSale = async (req, res) => {
+// @desc Create a new sale
+// @route POST /api/sales
+// @access Private/Admin
+const createSale = asyncHandler(async (req, res) => {
   const { productName, customerName, quantity, totalPrice } = req.body;
 
-  try {
-    // Find the product by name
-    const product = await Product.findOne({ name: productName });
-    // Find the customer by name
-    const customer = await Customer.findOne({ name: customerName });
+  const product = await Product.findOne({ name: productName });
+  const customer = await Customer.findOne({ name: customerName });
 
-    // If either the product or customer does not exist, return a 404 error
-    if (!product || !customer) {
-      return res.status(404).json({ message: 'Product or Customer not found' });
-    }
-
-    // Create a new Sale document with the found product and customer IDs
-    const newSale = new Sale({
-      product: product._id, // Reference to the product ID
-      customer: customer._id, // Reference to the customer ID
-      quantity,
-      totalPrice
-    });
-
-    // Save the Sale document to the database
-    const savedSale = await newSale.save();
-
-    // Return the newly created sale with a 201 status code
-    res.status(201).json(savedSale);
-  } catch (error) {
-    // If any error occurs, return a 500 error with a message
-    res.status(500).json({ message: 'Server Error', error });
+  if (!product || !customer) {
+    res.status(400);
+    throw new Error('Invalid product or customer');
   }
-};
 
-// @desc    Get all sales
-// @route   GET /api/sales
-// @access  Public
-export const getSales = async (req, res) => {
-  try {
-    const sales = await Sale.find().populate('product').populate('customer');
-    res.status(200).json(sales);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error', error });
+  if (product.stock < quantity) {
+    res.status(400);
+    throw new Error('Not enough stock available');
   }
-};
 
-// @desc    Get a single sale by ID
-// @route   GET /api/sales/:id
-// @access  Public
-export const getSaleById = async (req, res) => {
-  try {
-    const sale = await Sale.findById(req.params.id).populate('product').populate('customer');
+  const sale = new Sale({
+    product: product._id,
+    customer: customer._id,
+    quantity,
+    totalPrice,
+  });
 
-    if (!sale) {
-      return res.status(404).json({ message: 'Sale not found' });
-    }
+  const createdSale = await sale.save();
 
+  // Subtract the sold quantity from the product stock
+  product.stock -= quantity;
+  await product.save();
+
+  res.status(201).json(createdSale);
+});
+
+// @desc Get all sales
+// @route GET /api/sales
+// @access Private/Admin
+const getSales = asyncHandler(async (req, res) => {
+  const sales = await Sale.find({}).populate('product customer');
+  res.status(200).json(sales);
+});
+
+// @desc Get sale by ID
+// @route GET /api/sales/:id
+// @access Private/Admin
+const getSaleById = asyncHandler(async (req, res) => {
+  const sale = await Sale.findById(req.params.id).populate('product customer');
+
+  if (sale) {
     res.status(200).json(sale);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error', error });
+  } else {
+    res.status(404);
+    throw new Error('Sale not found');
   }
-};
+});
 
-// @desc    Update a sale
-// @route   PUT /api/sales/:id
-// @access  Public
-export const updateSale = async (req, res) => {
+// @desc Update sale by ID
+// @route PUT /api/sales/:id
+// @access Private/Admin
+const updateSale = asyncHandler(async (req, res) => {
   const { productName, customerName, quantity, totalPrice } = req.body;
 
-  try {
-    const sale = await Sale.findById(req.params.id);
+  const sale = await Sale.findById(req.params.id);
 
-    if (!sale) {
-      return res.status(404).json({ message: 'Sale not found' });
-    }
-
-    if (productName) {
-      const product = await Product.findOne({ name: productName });
-      if (!product) {
-        return res.status(404).json({ message: 'Product not found' });
-      }
-      sale.product = product._id;
-    }
-
-    if (customerName) {
-      const customer = await Customer.findOne({ name: customerName });
-      if (!customer) {
-        return res.status(404).json({ message: 'Customer not found' });
-      }
-      sale.customer = customer._id;
-    }
-
-    if (quantity) sale.quantity = quantity;
-    if (totalPrice) sale.totalPrice = totalPrice;
-
-    const updatedSale = await sale.save();
-    res.status(200).json(updatedSale);
-  } catch (error) {
-    res.status(500).json({ message: 'Server Error', error });
+  if (!sale) {
+    res.status(404);
+    throw new Error('Sale not found');
   }
-};
 
-// @desc    Delete a sale
-// @route   DELETE /api/sales/:id
-// @access  Public
-export const deleteSale = async (req, res) => {
+  const product = await Product.findOne({ name: productName });
+  const customer = await Customer.findOne({ name: customerName });
+
+  if (!product || !customer) {
+    res.status(400);
+    throw new Error('Invalid product or customer');
+  }
+
+  if (product.stock + sale.quantity < quantity) {
+    res.status(400);
+    throw new Error('Not enough stock available');
+  }
+
+  // Adjust the product stock
+  product.stock += sale.quantity; // Revert the original sale quantity
+  product.stock -= quantity; // Subtract the new quantity
+
+  sale.product = product._id;
+  sale.customer = customer._id;
+  sale.quantity = quantity;
+  sale.totalPrice = totalPrice;
+
+  const updatedSale = await sale.save();
+  await product.save();
+
+  res.status(200).json(updatedSale);
+});
+
+// @desc Delete sale by ID
+// @route DELETE /api/sales/:id
+// @access Private/Admin
+const deleteSale = asyncHandler(async (req, res) => {
   try {
-    const sale = await Sale.findById(req.params.id);
-
+    const { id } = req.params;
+    const sale = await Sale.findByIdAndDelete(id);
     if (!sale) {
-      return res.status(404).json({ message: 'Sale not found' });
+      return res.status(404).json({ message: "Sale not found" });
     }
 
-    await sale.remove();
-    res.status(200).json({ message: 'Sale removed' });
+    // Revert the product stock
+    const product = await Product.findById(sale.product);
+    if (product) {
+      product.stock += sale.quantity;
+      await product.save();
+    }
+
+    res.status(200).json({ message: "Sale deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error });
+    res.status(500).json({ message: error.message });
   }
-};
+});
+
+export { createSale, getSales, getSaleById, updateSale, deleteSale };

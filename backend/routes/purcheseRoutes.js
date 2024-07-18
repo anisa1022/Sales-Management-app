@@ -4,17 +4,19 @@ import {
   getPurchases,
   getPurchaseById,
   deletePurchase,
-} from '../controllers/purchaseController.js';
-import { protect, admin } from '../middleware/authMiddleware.js';
+  updatePurchase
+} from '../controller/purcheseController.js';
+import { protect} from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.route('/')
-  .post(protect, admin, createPurchase)
-  .get(protect, admin, getPurchases);
+  .post(protect, createPurchase)
+  .get(protect,  getPurchases);
 
 router.route('/:id')
-  .get(protect, admin, getPurchaseById)
-  .delete(protect, admin, deletePurchase);
+  .get(protect,  getPurchaseById)
+  .delete(protect,  deletePurchase)
+  .put(protect, updatePurchase);
 
 export default router;
