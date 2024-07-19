@@ -10,6 +10,7 @@ import CustomerRoute  from './routes/customerRoute.js';
 import SaleRoute from './routes/saleRoute.js'
 import SupplierRoute from './routes/supplierRoute.js';
 import PurchaseRoute from './routes/purcheseRoutes.js'
+import dashboardRoutes from './routes/dashboardRoute.js'
 import cors from 'cors'
 
 import cookieParser from 'cookie-parser';
@@ -35,7 +36,7 @@ app.use('/api/customers', CustomerRoute);
 app.use('/api/sales', SaleRoute);
 app.use('/api/suppliers', SupplierRoute);
 app.use('/api/purchases', PurchaseRoute);
-
+app.use('/api/dashboard', dashboardRoutes);
 
 const PORT = process.env.PORT || 8000
 

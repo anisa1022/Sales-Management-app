@@ -125,4 +125,26 @@ const deleteSale = asyncHandler(async (req, res) => {
   }
 });
 
-export { createSale, getSales, getSaleById, updateSale, deleteSale };
+// @desc Get sales data for chart
+// @route GET /api/sales/chart
+// @access Private
+const getSalesDataForChart = asyncHandler(async (req, res) => {
+  try {
+    const salesData = await Sale.aggregate([
+      {
+        $group: {
+          _id: { $month: "$date" },
+          totalSales: { $sum: "$totalPrice" },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+    res.json(salesData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+export { createSale, getSales, getSaleById, updateSale, deleteSale , getSalesDataForChart };

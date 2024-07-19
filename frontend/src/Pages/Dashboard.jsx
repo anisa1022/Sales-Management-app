@@ -1,52 +1,60 @@
 import React from 'react';
 import NavigationBar from '../components/NavigationBar';
-import Chart from '../components/Chart';
+import { 
+  useGetProductCountQuery, 
+  useGetPurchaseCountQuery, 
+  useGetSupplierCountQuery, 
+  useGetUserCountQuery, 
+  useGetCustomerCountQuery,
+  useGetSalesCountQuery
+} from '../services/dashboardSlice';
+import { useSelector } from 'react-redux';
+import InfoBox from '../components/InfoBox';
+import { FaBox, FaShoppingCart, FaTruck, FaUsers, FaUserFriends, FaChartLine } from 'react-icons/fa';
+import SalesChart from '../components/SalesChart';
+import PurchasesChart from '../components/PurchasesChart';
 
-function Dashboard() {
+const Dashboard = () => {
+  // Fetch counts from the backend
+  const { data: productCount } = useGetProductCountQuery();
+  const { data: purchaseCount } = useGetPurchaseCountQuery();
+  const { data: supplierCount } = useGetSupplierCountQuery();
+  const { data: userCount } = useGetUserCountQuery();
+  const { data: customerCount } = useGetCustomerCountQuery();
+  const { data: salesCount } = useGetSalesCountQuery();
+
+  // Get user info from Redux store
+  const { userInfo } = useSelector((state) => state.auth);
+
   return (
-    <div className='flex'> 
+    <div className='flex'>
       <NavigationBar />
-      <div className='flex flex-col space-y-6 py-12 px-14 w-full'>
-        <h2 className="text-2xl font-bold">Dashboard</h2>
-
-        {/* User information section */}
-        <div className='flex flex-wrap space-x-8'>
-          <div className='w-full md:w-2/5 h-[150px] border rounded flex flex-col justify-center p-4 text-gray-600'>
-            <span>Yatharth Werma</span>
-            <span className='text-gray-500'>Your balance: $50</span>
-          </div>
-          <div className='w-full md:w-2/5 h-[150px] border rounded flex flex-col justify-center p-4 text-gray-600'>
-            <span>Yatharth Werma</span>
-            <span className='text-gray-500'>Your expenses: $4000</span>
-          </div>
+      <div className='flex flex-col py-12 px-14 w-full ml-64 mt-20'>
+        <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
+        
+        <div className='grid grid-cols-1 md:grid-cols-4 gap-6 mb-8'>
+          {userInfo.name === 'admin' ? (
+            <>
+              <InfoBox icon={FaBox} title="Products" count={productCount} />
+              <InfoBox icon={FaShoppingCart} title="Purchases" count={purchaseCount} />
+              <InfoBox icon={FaTruck} title="Suppliers" count={supplierCount} />
+              <InfoBox icon={FaUsers} title="Users" count={userCount} />
+            </>
+          ) : (
+            <>
+              <InfoBox icon={FaBox} title="Products" count={productCount} />
+              <InfoBox icon={FaUserFriends} title="Customers" count={customerCount} />
+              <InfoBox icon={FaChartLine} title="Sales" count={salesCount} />
+            </>
+          )}
         </div>
 
-        {/* Sales chart section */}
-        <div className='flex flex-col space-y-4 w-full'>
-          <h2 className="text-xl font-bold">Sales Chart</h2>
-          <div className="w-full">
-            <Chart />
-          </div>
-        </div>
-
-        {/* Activity and pending bills section */}
-        <div className='flex flex-wrap space-x-8'>
-          <div className='w-full md:w-2/5 h-[150px] border rounded flex flex-col justify-center p-4 text-gray-600'>
-            <span>Your Activity</span>
-            <ul className='mt-4'>
-              <li>You sent $400 to your mother</li>
-            </ul>
-          </div>
-          <div className='w-full md:w-2/5 h-[150px] border rounded flex flex-col justify-center p-4 text-gray-600'>
-            <span>Pending Bills</span>
-            <ul className='mt-4 text-gray-500'>
-              <li>Broadband Bill: $4000</li>
-            </ul>
-          </div>
+        <div className="w-full mt-8">
+          {userInfo.name === 'admin' ? <PurchasesChart /> : <SalesChart />}
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Dashboard;

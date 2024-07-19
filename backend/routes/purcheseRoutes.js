@@ -4,7 +4,8 @@ import {
   getPurchases,
   getPurchaseById,
   deletePurchase,
-  updatePurchase
+  updatePurchase,
+  getPurchasesDataForChart
 } from '../controller/purcheseController.js';
 import { protect} from '../middleware/authMiddleware.js';
 
@@ -18,5 +19,7 @@ router.route('/:id')
   .get(protect,  getPurchaseById)
   .delete(protect,  deletePurchase)
   .put(protect, updatePurchase);
+
+router.route('/chart').get(protect, getPurchasesDataForChart)
 
 export default router;

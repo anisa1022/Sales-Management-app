@@ -24,6 +24,14 @@ const SaleForm = ({
 
   return (
     <>
+    {!showForm && (
+      <button
+        className="bg-gray-900 text-white font-semibold p-2 rounded mb-4"
+        onClick={() => setShowForm(true)}
+      >
+        ADD CUSTOMER
+      </button>
+    )}
       {showForm && (
         <div className="mb-4 flex flex-wrap space-y-4 md:space-y-0 md:space-x-2">
           <select

@@ -125,4 +125,27 @@ const deletePurchase = asyncHandler(async (req, res) => {
   }
 });
 
-export { createPurchase, getPurchases, getPurchaseById, updatePurchase, deletePurchase };
+// @desc Get purchases data for chart
+// @route GET /api/purchases/chart
+// @access Private
+const getPurchasesDataForChart = asyncHandler(async (req, res) => {
+  try {
+    const purchasesData = await Purchase.aggregate([
+      {
+        $group: {
+          _id: { $month: "$date" },
+          totalPurchases: { $sum: "$totalPrice" },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+    res.json(purchasesData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+export { createPurchase, getPurchases, getPurchaseById, updatePurchase, deletePurchase , getPurchasesDataForChart };

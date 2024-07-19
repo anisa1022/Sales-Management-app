@@ -50,12 +50,14 @@ function NavigationBar() {
     };
 
     const navLinks = userInfo.name === 'admin' ? [
+        {name: "Dashboard", icon: Package, path: "/dashboard"},
         { name: "Product", icon: Package, path: "/product" },
         { name: "Supplier", icon: Truck, path: "/supplier" },
         { name: "Purchases", icon: ShoppingCart, path: "/purchase" },
         { name: "Users", icon: UserCircle, path: "/users" },
         { name: 'Logout', icon: LogOut, path: "/login" }
     ] : [
+        {name: "Dashboard", icon: Package, path: "/dashboard"},
         { name: "Product", icon: Package, path: "/product" },
         { name: "Customer", icon: Users, path: "/customer" },
         { name: "Sales", icon: FileLineChart, path: "/sales" },

@@ -4,7 +4,8 @@ import {
   getSales,
   getSaleById,
   updateSale,
-  deleteSale
+  deleteSale,
+  getSalesDataForChart
 } from '../controller/saleController.js';
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get('/',getSales);
 router.get('/:id',getSaleById)
 router.put('/:id',updateSale)
 router.delete('/:id',deleteSale);
+router.get('/chart',getSalesDataForChart)
 
 export default router;
