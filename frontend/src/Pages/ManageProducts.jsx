@@ -1,6 +1,10 @@
-// src/pages/ManageProducts.js
-import React, { useState } from 'react';
-import { useFetchProductsQuery, useAddProductMutation, useUpdateProductMutation, useDeleteProductMutation } from '../services/productSlice';
+import React, { useState, useEffect } from 'react';
+import {
+  useFetchProductsQuery,
+  useAddProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation
+} from '../services/productSlice';
 import ProductForm from '../components/ProductForm';
 import ProductTable from '../components/ProductTable';
 import NavigationBar from '../components/NavigationBar';
@@ -8,7 +12,7 @@ import Header from '../components/Header';
 
 const ManageProducts = () => {
   const { data: products = [], refetch } = useFetchProductsQuery();
-  const [addProduct] = useAddProductMutation();
+  const [createProduct] = useAddProductMutation();
   const [updateProduct] = useUpdateProductMutation();
   const [deleteProduct] = useDeleteProductMutation();
 
@@ -21,20 +25,13 @@ const ManageProducts = () => {
   const [showForm, setShowForm] = useState(false);
 
   const handleAddProduct = async () => {
-    const productData = {
-      name,
-      description,
-      price: Number(price), // Ensure price is a number
-      category,
-      stock: Number(stock) // Ensure stock is a number
-    };
-
+    const productData = { name, description, price, category, stock: Number(stock) };
     try {
       if (editProductId) {
         await updateProduct({ id: editProductId, data: productData });
         setEditProductId(null);
       } else {
-        await addProduct(productData);
+        await createProduct(productData);
       }
       setName('');
       setDescription('');
@@ -68,11 +65,12 @@ const ManageProducts = () => {
   };
 
   return (
-    <div className="flex">
+    <div className='flex'>
       <Header />
       <NavigationBar />
       <div className="flex-grow ml-64 mt-20 p-6">
         <h2 className="text-2xl font-bold mb-4">Products</h2>
+
         <ProductForm
           name={name}
           description={description}
@@ -89,6 +87,7 @@ const ManageProducts = () => {
           setShowForm={setShowForm}
           editProductId={editProductId}
         />
+
         <ProductTable
           products={products}
           handleEditProduct={handleEditProduct}

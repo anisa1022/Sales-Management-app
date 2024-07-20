@@ -23,9 +23,18 @@ const getProduct = async(req, res)=>{
 
 /// post product
 const postProduct =async(req,res)=>{
+    const { name, description, price, category, stock } = req.body;
     try {
-        const product = await Product.create(req.body);
-        res.status(200).json(product);
+        const product = new Product({
+            name,
+            description,
+            price: Number(price),
+            category,
+            stock: Number(stock),
+          });
+        
+          const createdProduct = await product.save();
+          res.status(201).json(createdProduct);
     } catch (error) {
         res.status(500).json({message: error.message});
     }

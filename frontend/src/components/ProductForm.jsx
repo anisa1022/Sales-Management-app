@@ -14,7 +14,8 @@ const ProductForm = ({
   handleAddProduct,
   showForm,
   setShowForm,
-  editProductId
+  editProductId,
+  setEditProductId
 }) => (
   <>
     {!showForm && (

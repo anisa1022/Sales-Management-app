@@ -1,45 +1,40 @@
-import { apiSlice } from "./apiSlice";
+import { apiSlice } from './apiSlice';
 
-const PURCHASES_URL = '/api/purchases';
-
-export const purchasesApiSlice = apiSlice.injectEndpoints({
+export const purchaseApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    fetchPurchases: builder.query({
-      query: () => ({
-        url: PURCHASES_URL,
-        method: 'GET',
-      }),
-      providesTags: ['Purchases'],
-    }),
-    addPurchase: builder.mutation({
-      query: (purchase) => ({
-        url: PURCHASES_URL,
+    createPurchase: builder.mutation({
+      query: (data) => ({
+        url: '/api/purchases',
         method: 'POST',
-        body: purchase,
+        body: data,
       }),
-      invalidatesTags: ['Purchases'],
+    }),
+    fetchPurchases: builder.query({
+      query: () => '/api/purchases',
+    }),
+    getPurchaseById: builder.query({
+      query: (id) => `/api/purchases/${id}`,
     }),
     updatePurchase: builder.mutation({
       query: ({ id, data }) => ({
-        url: `${PURCHASES_URL}/${id}`,
+        url: `/api/purchases/${id}`,
         method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ['Purchases'],
     }),
     deletePurchase: builder.mutation({
       query: (id) => ({
-        url: `${PURCHASES_URL}/${id}`,
+        url: `/api/purchases/${id}`,
         method: 'DELETE',
       }),
-      invalidatesTags: ['Purchases'],
     }),
   }),
 });
 
 export const {
+  useCreatePurchaseMutation,
   useFetchPurchasesQuery,
-  useAddPurchaseMutation,
+  useGetPurchaseByIdQuery,
   useUpdatePurchaseMutation,
   useDeletePurchaseMutation,
-} = purchasesApiSlice;
+} = purchaseApiSlice;

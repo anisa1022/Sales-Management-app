@@ -1,10 +1,10 @@
-// src/pages/ManageSales.js
 import React, { useState, useEffect } from 'react';
 import { 
   useGetSalesQuery, 
   useCreateSaleMutation, 
   useUpdateSaleMutation, 
-  useDeleteSaleMutation } from '../services/saleSlice';
+  useDeleteSaleMutation 
+} from '../services/saleSlice';
 import { useFetchProductsQuery } from '../services/productSlice';
 import { useGetCustomersQuery } from '../services/customerSlice';
 import SaleForm from '../components/SaleForm';
@@ -24,7 +24,8 @@ const ManageSales = () => {
   const [product, setProduct] = useState('');
   const [customer, setCustomer] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [totalPrice, setTotalPrice] = useState('');
+  const [price, setPrice] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [editSaleId, setEditSaleId] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
@@ -32,16 +33,19 @@ const ManageSales = () => {
     if (editSaleId) {
       const saleToEdit = sales.find(sale => sale._id === editSaleId);
       if (saleToEdit) {
-        setProduct(saleToEdit.product.name);
-        setCustomer(saleToEdit.customer.name);
+        setProduct(saleToEdit.product._id);
+        setCustomer(saleToEdit.customer._id);
         setQuantity(saleToEdit.quantity);
+        setPrice(saleToEdit.product.price);
         setTotalPrice(saleToEdit.totalPrice);
       }
     }
   }, [editSaleId, sales]);
 
   const handleAddSale = async () => {
-    const saleData = { productName: product, customerName: customer, quantity, totalPrice };
+    const saleData = { productName: product, customerName: customer, quantity, price, totalPrice };
+
+    
 
     try {
       if (editSaleId) {
@@ -53,7 +57,8 @@ const ManageSales = () => {
       setProduct('');
       setCustomer('');
       setQuantity('');
-      setTotalPrice('');
+      setPrice(0);
+      setTotalPrice(0);
       setShowForm(false);
       refetch();
     } catch (error) {
@@ -85,10 +90,12 @@ const ManageSales = () => {
           product={product}
           customer={customer}
           quantity={quantity}
+          price={price}
           totalPrice={totalPrice}
           setProduct={setProduct}
           setCustomer={setCustomer}
           setQuantity={setQuantity}
+          setPrice={setPrice}
           setTotalPrice={setTotalPrice}
           handleAddSale={handleAddSale}
           showForm={showForm}

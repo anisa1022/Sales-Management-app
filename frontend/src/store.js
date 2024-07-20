@@ -4,7 +4,7 @@ import { apiSlice } from './services/apiSlice';
 import { customerApiSlice } from './services/customerSlice';
 import { saleApiSlice } from './services/saleSlice';
 import { suppliersApiSlice } from './services/supplierSlice';
-import { purchasesApiSlice } from './services/purcheseSlice';
+import { purchaseApiSlice } from './services/purcheseSlice';
 import { chartApiSlice } from './services/chartSlice';
 import { productApiSlice } from './services/productSlice'; // Import the product slice
 import { dashboardSlice } from './services/dashboardSlice';
@@ -29,7 +29,7 @@ const store = configureStore({
       [suppliersApiSlice.reducerPath]: suppliersApiSlice.reducer,
   
       // Include the purchase API slice's reducer to manage purchase-related API state
-      [purchasesApiSlice.reducerPath]: purchasesApiSlice.reducer,
+      [purchaseApiSlice.reducerPath]: purchaseApiSlice.reducer,
   
       // Include the chart API slice's reducer to manage chart-related API state
       [chartApiSlice.reducerPath]: chartApiSlice.reducer,
@@ -51,7 +51,7 @@ const store = configureStore({
         // Include middleware for handling API calls for the supplier API slice
         suppliersApiSlice.middleware,
         // Include middleware for handling API calls for the purchase API slice
-        purchasesApiSlice.middleware,
+        purchaseApiSlice.middleware,
         // Include middleware for handling API calls for the chart API slice
         chartApiSlice.middleware,
         // Include middleware for handling API calls for the product API slice

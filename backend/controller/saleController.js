@@ -7,10 +7,21 @@ import Customer from '../models/customerModel.js';
 // @route POST /api/sales
 // @access Private/Admin
 const createSale = asyncHandler(async (req, res) => {
-  const { productName, customerName, quantity, totalPrice } = req.body;
+  const { productName, customerName, quantity, price, totalPrice } = req.body;
 
-  const product = await Product.findOne({ name: productName });
-  const customer = await Customer.findOne({ name: customerName });
+  console.log('Received sale data:', req.body);
+
+  // Validate received data
+  if (!productName || !customerName || !quantity || !price || !totalPrice) {
+    res.status(400);
+    throw new Error('All fields are required');
+  }
+
+
+  const product = await Product.findById(productName);
+  const customer = await Customer.findById(customerName);
+
+  
 
   if (!product || !customer) {
     res.status(400);
@@ -26,17 +37,20 @@ const createSale = asyncHandler(async (req, res) => {
     product: product._id,
     customer: customer._id,
     quantity,
+    price,
     totalPrice,
   });
 
   const createdSale = await sale.save();
 
   // Subtract the sold quantity from the product stock
-  product.stock -= quantity;
+  product.stock =Number(product.stock)- Number(quantity);
   await product.save();
 
   res.status(201).json(createdSale);
 });
+
+
 
 // @desc Get all sales
 // @route GET /api/sales

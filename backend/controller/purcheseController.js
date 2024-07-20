@@ -7,21 +7,27 @@ import Supplier from '../models/supplierModel.js';
 // @route POST /api/purchases
 // @access Private/Admin
 const createPurchase = asyncHandler(async (req, res) => {
-  const { product, supplier, quantity, price } = req.body;
+  const { productName, supplierName, quantity, price, totalPrice } = req.body;
 
-  const productExists = await Product.findById(product);
-  const supplierExists = await Supplier.findById(supplier);
+  console.log('Received purchase data:', req.body);
 
-  if (!productExists || !supplierExists) {
+  // Validate received data
+  if (!productName || !supplierName || !quantity || !price || !totalPrice) {
+    res.status(400);
+    throw new Error('All fields are required');
+  }
+
+  const product = await Product.findById(productName);
+  const supplier = await Supplier.findById(supplierName);
+
+  if (!product || !supplier) {
     res.status(400);
     throw new Error('Invalid product or supplier');
   }
 
-  const totalPrice = quantity * price;
-
   const purchase = new Purchase({
-    product,
-    supplier,
+    product: product._id,
+    supplier: supplier._id,
     quantity,
     price,
     totalPrice,
@@ -29,9 +35,9 @@ const createPurchase = asyncHandler(async (req, res) => {
 
   const createdPurchase = await purchase.save();
 
-  // Update the product stock
-  productExists.stock += quantity;
-  await productExists.save();
+  // Add the purchased quantity to the product stock
+  product.stock = Number(product.stock) + Number(quantity);
+  await product.save();
 
   res.status(201).json(createdPurchase);
 });
@@ -93,12 +99,11 @@ const updatePurchase = asyncHandler(async (req, res) => {
   const updatedPurchase = await purchase.save();
 
   // Update the product stock with the new quantity
-  productExists.stock += quantity;
+  productExists.stock += productExists.stock + quantity;
   await productExists.save();
 
   res.status(200).json(updatedPurchase);
 });
-
 
 
 // @desc Delete purchase by ID
@@ -106,22 +111,20 @@ const updatePurchase = asyncHandler(async (req, res) => {
 // @access Private/Admin
 const deletePurchase = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  try {
-    const purchase = await Purchase.findByIdAndDelete(id);
-    if (!purchase) {
-      return res.status(404).json({ message: "Purchase not found" });
-    }
+  const purchase = await Purchase.findById(id);
 
-    // Revert the quantity from the product stock
-    const productExists = await Product.findById(purchase.product);
-    if (productExists) {
-      productExists.stock -= purchase.quantity;
-      await productExists.save();
+  if (purchase) {
+    // Subtract the purchased quantity from the product stock
+    const product = await Product.findById(purchase.product);
+    if (product) {
+      product.stock = Number(product.stock) - Number(purchase.quantity);
+      await product.save();
     }
-
-    res.status(200).json({ message: "Purchase deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    await purchase.remove();
+    res.status(200).json({ message: 'Purchase removed' });
+  } else {
+    res.status(404);
+    throw new Error('Purchase not found');
   }
 });
 

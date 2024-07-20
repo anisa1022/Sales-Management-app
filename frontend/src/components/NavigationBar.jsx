@@ -49,7 +49,7 @@ function NavigationBar() {
         }
     };
 
-    const navLinks = userInfo.name === 'admin' ? [
+    const navLinks = userInfo.role === 'admin' ? [
         {name: "Dashboard", icon: Package, path: "/dashboard"},
         { name: "Product", icon: Package, path: "/product" },
         { name: "Supplier", icon: Truck, path: "/supplier" },

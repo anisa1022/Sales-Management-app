@@ -18,19 +18,32 @@ const PurchaseForm = ({
   products,
   suppliers,
 }) => {
-
   useEffect(() => {
-    setTotalPrice(price * quantity);
-  }, [price, quantity, setTotalPrice]);
+    setTotalPrice(quantity * price);
+  }, [quantity, price]);
+
+  const handleProductChange = (e) => {
+    const selectedProduct = products.find(p => p._id === e.target.value);
+    setProduct(e.target.value);
+    setPrice(selectedProduct ? selectedProduct.price : 0);
+  };
 
   return (
     <>
+      {!showForm && (
+        <button
+          className="bg-gray-900 text-white font-semibold p-2 rounded mb-4"
+          onClick={() => setShowForm(true)}
+        >
+          ADD PURCHASE
+        </button>
+      )}
       {showForm && (
         <div className="mb-4 flex flex-wrap space-y-4 md:space-y-0 md:space-x-2">
           <select
             className="border p-2 flex-1"
             value={product}
-            onChange={(e) => setProduct(e.target.value)}
+            onChange={handleProductChange}
           >
             <option value="">Select Product</option>
             {products.map((prod) => (
@@ -63,7 +76,7 @@ const PurchaseForm = ({
             className="border p-2 flex-1"
             placeholder="Price"
             value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            readOnly
           />
           <input
             type="number"
